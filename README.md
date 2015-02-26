@@ -1,0 +1,2 @@
+# TimestampPaginator
+Django Timestamp Paginator
