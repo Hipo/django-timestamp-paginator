@@ -37,14 +37,24 @@ class TimestampPaginator(Paginator):
     def validate_timestamp(self, ts):
         pass
 
+    def _ensure_ordering(self):
+        self.queryset = self.queryset.order_by('-{0}'.format(self.timestamp_field))
+
     def page(self, max_timestamp=None, min_timestamp=None):
         self.validate_timestamp(max_timestamp or min_timestamp)
+        self._ensure_ordering()
 
         timestamp_query = '{timestamp_field}__{condition}'
         timestamp_query = timestamp_query.format(timestamp_field=self.timestamp_field,
                                                  condition=GREATER_THAN if min_timestamp else LOWER_THAN)
         timestamp_query_kwarg = {timestamp_query: min_timestamp or max_timestamp}
         filtered_queryset = self.queryset._clone().filter(**timestamp_query_kwarg)
+
+        print '====query======='
+        print timestamp_query_kwarg
+        print '=====queryset====='
+        print filtered_queryset
+        print '=================='
 
         return Page(filtered_queryset[:self.per_page + 1], self)
 
@@ -53,7 +63,7 @@ class Page(BasePage):
 
     def __init__(self, object_list, paginator):
         self.paginator = paginator
-        self._has_next = len(self.object_list) > self.paginator.per_page
+        self._has_next = len(object_list) > self.paginator.per_page
         self.object_list = object_list[:self.paginator.per_page]
 
     def has_next(self):
@@ -79,3 +89,6 @@ class Page(BasePage):
         if not isinstance(self.object_list, list):
             self.object_list = list(self.object_list)
         return self.object_list[index]
+
+    def __repr__(self):
+        return 'asd'
