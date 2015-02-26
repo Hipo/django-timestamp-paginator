@@ -3,6 +3,7 @@ from math import ceil
 
 from django.core.paginator import Paginator, Page as BasePage
 from django.db.models.query import QuerySet
+from django.db.models import Count
 from django.utils import six
 
 
@@ -17,6 +18,10 @@ class InvalidTimestamp(Exception):
 """
 This code assumes queryset will be given with descending `timestamp` order
 This assumption is everything for us.
+
+min_timestamp goes forward
+max_timestamp goes backwards
+
 """
 
 
@@ -53,6 +58,18 @@ class Page(BasePage):
 
     def has_next(self):
         return self._has_next
+
+    def has_previous(self):
+        """
+        Not implemented
+        """
+        return True
+
+    def next_page_timestamp(self):
+        return getattr(self.object_list[-1], self.paginator.timestamp_field)
+
+    def previous_page_timestamp(self):
+        return getattr(self.object_list[0], self.paginator.timestamp_field)
 
     def __getitem__(self, index):
         if not isinstance(index, (slice,) + six.integer_types):
