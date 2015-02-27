@@ -3,6 +3,7 @@ import sys
 from django.core.paginator import Paginator, Page as BasePage
 from django.db.models.query import QuerySet
 from django.utils import six
+from django.utils.encoding import smart_str
 
 
 LOWER_THAN = 'lt'
@@ -72,19 +73,10 @@ class Page(BasePage):
         """
         Not implemented
         """
-        return True
+        return False
 
     def next_page_timestamp(self):
         return getattr(self.object_list[-1], self.paginator.timestamp_field)
 
-    def __getitem__(self, index):
-        if not isinstance(index, (slice,) + six.integer_types):
-            raise TypeError
-        # The object_list is converted to a list so that if it was a QuerySet
-        # it won't be a database hit per __getitem__.
-        if not isinstance(self.object_list, list):
-            self.object_list = list(self.object_list)
-        return self.object_list[index]
-
     def __repr__(self):
-        return '<Page with next timestamp=%s>' % self.next_page_timestamp()
+        return '<Page with next timestamp=%s>' % smart_str(self.next_page_timestamp())
