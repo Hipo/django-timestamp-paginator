@@ -41,7 +41,7 @@ class TimestampPaginator(Paginator):
             else:
                 continue
 
-    def page(self, timestamp):
+    def page(self, timestamp=None):
         if not timestamp:
             timestamp = sys.float_info.max if self.ordering == DESCENDING else sys.float_info.min
         else:
