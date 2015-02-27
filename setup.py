@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='Django Timestamp Paginator',
+    name='django-timestamp-paginator',
     version='0.0.1',
     description='Timestamp Paginator for Django.',
     packages=['django_timestamp_paginator', ],
