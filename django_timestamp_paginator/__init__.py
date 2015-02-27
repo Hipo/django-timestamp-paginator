@@ -8,7 +8,7 @@ MIT Licence
 """
 
 
-from timestamp_paginator.paginator import TimestampPaginator, Page
+from django_timestamp_paginator.paginator import TimestampPaginator, Page
 
 __all__ = [
     'TimestampPaginator',
