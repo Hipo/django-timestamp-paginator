@@ -1,28 +1,19 @@
-import collections
-from math import ceil
+import sys
 
 from django.core.paginator import Paginator, Page as BasePage
 from django.db.models.query import QuerySet
-from django.db.models import Count
 from django.utils import six
 
 
 LOWER_THAN = 'lt'
 GREATER_THAN = 'gt'
 
+ASCENDING = ''
+DESCENDING = '-'
+
 
 class InvalidTimestamp(Exception):
     pass
-
-
-"""
-This code assumes queryset will be given with descending `timestamp` order
-This assumption is everything for us.
-
-min_timestamp goes forward
-max_timestamp goes backwards
-
-"""
 
 
 class TimestampPaginator(Paginator):
@@ -32,29 +23,37 @@ class TimestampPaginator(Paginator):
         super(TimestampPaginator, self).__init__(queryset, per_page, allow_empty_first_page=allow_empty_first_page)
         self.timestamp_field = timestamp_field
         self.queryset = queryset
+        self.ordering = self._get_ordering()
+        assert self.ordering is not None, '`queryset` must be ordered by ' \
+                                          '`{ts_field}` or `-{ts_field}`'.format(ts_field=self.timestamp_field)
+
         self.allow_empty_first_page = allow_empty_first_page
 
     def validate_timestamp(self, ts):
         pass
 
-    def _ensure_ordering(self):
-        self.queryset = self.queryset.order_by('-{0}'.format(self.timestamp_field))
+    def _get_ordering(self):
+        for order in self.queryset.query.order_by + list(self.queryset.model._meta.ordering):
+            if order == DESCENDING + self.timestamp_field:
+                return DESCENDING
+            elif order == ASCENDING + self.timestamp_field:
+                return ASCENDING
+            else:
+                continue
 
-    def page(self, max_timestamp=None, min_timestamp=None):
-        self.validate_timestamp(max_timestamp or min_timestamp)
-        self._ensure_ordering()
+    def page(self, timestamp):
+        if not timestamp:
+            timestamp = sys.float_info.max if self.ordering == DESCENDING else sys.float_info.min
+        else:
+            self.validate_timestamp(timestamp)
 
         timestamp_query = '{timestamp_field}__{condition}'
+        condition = GREATER_THAN if self.ordering == ASCENDING else LOWER_THAN
         timestamp_query = timestamp_query.format(timestamp_field=self.timestamp_field,
-                                                 condition=GREATER_THAN if min_timestamp else LOWER_THAN)
-        timestamp_query_kwarg = {timestamp_query: min_timestamp or max_timestamp}
-        filtered_queryset = self.queryset._clone().filter(**timestamp_query_kwarg)
+                                                 condition=condition)
 
-        print '====query======='
-        print timestamp_query_kwarg
-        print '=====queryset====='
-        print filtered_queryset
-        print '=================='
+        timestamp_query_kwarg = {timestamp_query: timestamp}
+        filtered_queryset = self.queryset.filter(**timestamp_query_kwarg)
 
         return Page(filtered_queryset[:self.per_page + 1], self)
 
@@ -77,9 +76,6 @@ class Page(BasePage):
 
     def next_page_timestamp(self):
         return getattr(self.object_list[-1], self.paginator.timestamp_field)
-
-    def previous_page_timestamp(self):
-        return getattr(self.object_list[0], self.paginator.timestamp_field)
 
     def __getitem__(self, index):
         if not isinstance(index, (slice,) + six.integer_types):
