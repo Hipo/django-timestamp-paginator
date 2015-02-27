@@ -87,4 +87,4 @@ class Page(BasePage):
         return self.object_list[index]
 
     def __repr__(self):
-        return 'asd'
+        return '<Page with next timestamp=%s>' % self.next_page_timestamp()
