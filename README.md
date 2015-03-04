@@ -18,7 +18,7 @@ the last image of the first page will become the first item of the second page.
 In order to prevent this problem, there are many alternative ways that can be used. 
 One of the best alternatives is to use timestamps instead of page numbers.
 
-This paginator makes the pagination by timestamps of the items. 
+This paginator makes the pagination by the timestamps of the items. 
 
 ## Installation
 
