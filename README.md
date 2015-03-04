@@ -18,7 +18,7 @@ the last image of the first page will become the first item of the second page.
 In order to prevent this problem, there are many alternative ways that can be used. 
 One of the best alternatives is to use timestamps instead of page numbers.
 
-This paginator is making the pagination by timestamps of the items. 
+This paginator makes the pagination by timestamps of the items. 
 
 ## Installation
 
@@ -53,8 +53,7 @@ No, there is no previous page. TimestampPaginator goes **only forwards** , ***re
 Django
 
 ### Django Rest Framework?
-If you are planning to use this with Django Rest Framework? 
-Check out the [drf-timestamp-pagination](https://github.com/Hipo/drf-timestamp-pagination) package!
+If you are planning to use this package with Django Rest Framework, check out the [drf-timestamp-pagination](https://github.com/Hipo/drf-timestamp-pagination) package!
 
 ### Contribution
 ANY contribution is more than welcome. 
