@@ -1,17 +1,17 @@
-# TimestampPaginator
-
-Django Timestamp Paginator
+# Django Timestamp Paginator
 
 ## Why we needed this?
 
 Classical pagination (?page=2) doesn't work properly with actively updated list pages.
 
-####Example:
+#### Example:
 Imagine a web page where people upload their pet's pictures. 
-Anyone can upload a picture anytime and it will be listed. 
-The newest picture appears at the top of the page. 
-When the list will be complete, the users will go to the second page (by a link or infinite loader). 
+ - Anyone can upload a picture anytime and it will be listed. 
+ - The newest picture appears at the top of the page. 
+ - When the list will be complete, the users will go to the second page (by a link or infinite loader). 
+
 This will work fine.
+
 However, if during this time period, a new image will be uploaded, 
 the last image of the first page will become the first item of the second page.
 
